@@ -7,7 +7,7 @@ from config.models import SideBar
 
 from django.views.generic import ListView, DetailView
 from django.shortcuts import get_object_or_404
-
+from django.db.models import Q
 
 class CommonViewMixin:
     def get_context_data(self, **kwargs):
@@ -62,6 +62,21 @@ class PostDetailView(CommonViewMixin, DetailView):
     template_name = 'blog/detail.html'
     context_object_name = 'post'
     pk_url_kwarg = 'post_id'
+
+
+class SearchView(IndexView):
+    def get_context_date(self):
+        context = super().get_context_data()
+        context.update({
+            'keyword': self.request.GET.get('keyword', '')
+        })
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        keyword = self.request.GET.get('keyword')
+        if not keyword:
+            return queryset
+        return queryset.filter(Q(title__icontains=keyword) | Q(desc__icontains=keyword))
 
 
 def post_list(request, category_id=None, tag_id=None):
