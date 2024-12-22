@@ -1,3 +1,4 @@
+import mistune
 from django.db import models
 from django.contrib.auth.models import User
 
@@ -38,6 +39,7 @@ class Category(models.Model):
             'categories': normal_categories,
         }
 
+
 class Tag(models.Model):
     STATUS_NORMAL = 1
     STATUS_DELETE = 0
@@ -71,6 +73,7 @@ class Post(models.Model):
     title = models.CharField(max_length=255, verbose_name='标题')
     desc = models.CharField(max_length=1024, blank=True, verbose_name='摘要')
     content = models.TextField(verbose_name='正文', help_text='正文必须为Markdown格式')
+    content_html = models.TextField(verbose_name='正文html代码', blank=True, editable=False)
     status = models.PositiveIntegerField(default=STATUS_NORMAL, choices=STATUS_ITEMS, verbose_name='状态')
     category = models.ForeignKey(Category, verbose_name='分类', on_delete=models.CASCADE)
     tag = models.ManyToManyField(Tag, verbose_name='标签')
@@ -79,6 +82,10 @@ class Post(models.Model):
 
     pv = models.PositiveIntegerField(default=1)
     uv = models.PositiveIntegerField(default=1)
+
+    def save(self, *args, **kwargs):
+        self.content_html = mistune.markdown(self.content)
+        super().save(*args, **kwargs)
 
     @classmethod
     def hot_posts(cls):
@@ -111,7 +118,6 @@ class Post(models.Model):
             post_list = category.post_set.filter(status=Post.STATUS_NORMAL).select_related('owner', 'category')
 
         return post_list, category
-
 
     @classmethod
     def latest_posts(cls):
