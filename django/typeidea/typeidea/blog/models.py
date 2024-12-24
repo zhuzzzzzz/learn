@@ -1,6 +1,7 @@
 import mistune
 from django.db import models
 from django.contrib.auth.models import User
+from django.utils.functional import cached_property
 
 
 class Category(models.Model):
@@ -82,6 +83,10 @@ class Post(models.Model):
 
     pv = models.PositiveIntegerField(default=1)
     uv = models.PositiveIntegerField(default=1)
+
+    @cached_property
+    def tags(self):
+        return ','.join(self.tag.values_list('name', flat=True))
 
     def save(self, *args, **kwargs):
         self.content_html = mistune.markdown(self.content)

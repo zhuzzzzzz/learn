@@ -1,3 +1,5 @@
+from datetime import date
+from django.core.cache import cache
 from django.shortcuts import render
 
 from django.http import HttpResponse
@@ -7,7 +9,7 @@ from config.models import SideBar
 
 from django.views.generic import ListView, DetailView
 from django.shortcuts import get_object_or_404
-from django.db.models import Q
+from django.db.models import Q, F
 
 from comment.forms import CommentForm
 from comment.models import Comment
@@ -67,6 +69,32 @@ class PostDetailView(CommonViewMixin, DetailView):
     template_name = 'blog/detail.html'
     context_object_name = 'post'
     pk_url_kwarg = 'post_id'
+
+    def get(self, request, *args, **kwargs):
+        response = super().get(request, *args, **kwargs)
+        self.handle_visited()
+        return response
+
+    def handle_visited(self):
+        increase_PV = False
+        increase_UV = False
+        uid = self.request.uid
+        pv_key = 'pv:%s:%s' % (uid, self.request.path)
+        uv_key = 'pv:%s:%s:%s' % (uid, str(date.today()), self.request.path)
+        if not cache.get(pv_key):
+            increase_PV = True
+            cache.set(pv_key, 1, 1 * 60)
+
+        if not cache.get(uv_key):
+            increase_UV = True
+            cache.set(uv_key, 1, 24 * 60 * 60)
+
+        if increase_PV and increase_UV:
+            Post.objects.filter(pk=self.object.id).update(pv=F('pv') + 1, uv=F('uv') + 1)
+        elif increase_PV:
+            Post.objects.filter(pk=self.object.id).update(pv=F('pv') + 1)
+        elif increase_UV:
+            Post.objects.filter(pk=self.object.id).update(pv=F('uv') + 1)
 
 
 class SearchView(IndexView):
