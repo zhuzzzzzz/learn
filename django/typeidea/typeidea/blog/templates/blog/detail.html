@@ -17,6 +17,8 @@
 <div>
     <span>作者: {{ post.owner.username }}</span>
     <span>分类: {{ post.category.name }}</span>
+    <span>日访问量: {{ post.uv }}</span>
+    <span>点击量: {{ post.pv }}</span>
 </div>
 <hr/>
 <p>{% autoescape off %}{{ post.content_html }}{% endautoescape %}</p>

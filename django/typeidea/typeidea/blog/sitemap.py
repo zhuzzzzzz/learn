@@ -16,4 +16,4 @@ class PostSitemap(Sitemap):
         return obj.created_time
 
     def location(self, obj):
-        return reverse('post-detail', args=[obj.pk])
+        return reverse('blog:post-detail', args=[obj.pk])

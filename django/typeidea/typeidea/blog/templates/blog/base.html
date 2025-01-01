@@ -21,11 +21,11 @@
             <ul class="navbar-nav mr-auto">
                 {% for cate in navs %}
                 <li class="nav-item">
-                    <a class="nav-link" href="{% url 'category-list' cate.id %}">{{cate.name}}</a>
+                    <a class="nav-link" href="{% url 'blog:category-list' cate.id %}">{{cate.name}}</a>
                 </li>
                 {% endfor %}
             </ul>
-            <form class="form-inline my-2 my-lg-0" action="/search/" method="GET">
+            <form class="form-inline my-2 my-lg-0" action="{% url 'blog:search' %}" method="GET">
                 <input class="form-control mr-sm-2" type="search" name="keyword" placeholder="Search"
                        aria-label="Search" value="{{keyword}}">
                 <button class="btn btn-outline-success" type="submit">搜索</button>
@@ -62,12 +62,12 @@
         <hr/>
         <nav class="nav category">
             {% for cate in categories %}
-            <a href="{% url 'category-list' cate.id%}" class="nav-link">{{cate.name}}</a>
+            <a href="{% url 'blog:category-list' cate.id%}" class="nav-link">{{cate.name}}</a>
             {%endfor%}
         </nav>
     </div>
     <div class="container power">
-        <span class="text-muted">Power by Typeidea@the5fire</span>
+        <span class="text-muted">Power by Typeidea@zhu</span>
     </div>
 </footer>
 </body>
