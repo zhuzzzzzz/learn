@@ -18,9 +18,11 @@ class TagAdmin(admin.ModelAdmin):
         obj.owner = request.user
         return super(TagAdmin, self).save_model(request, obj, form, change)
 
+
 @admin.register(LogEntry, site=custom_site)
 class LogEntryAdmin(admin.ModelAdmin):
     list_display = ['object_repr', 'object_id', 'action_flag', 'user', 'change_message']
+
 
 class PostInLine(admin.TabularInline):
     fields = ('title', 'desc', 'owner')
@@ -44,9 +46,6 @@ class CategoryAdmin(admin.ModelAdmin):
         return super(CategoryAdmin, self).save_model(request, obj, form, change)
 
 
-
-
-
 class CategoryOwnerFilter(admin.SimpleListFilter):
     title = '分类过滤器'
     parameter_name = 'owner_category'
@@ -68,6 +67,7 @@ class PostAdmin(admin.ModelAdmin):
     list_display = ('title', 'owner', 'category', 'status', 'created_time', 'operator')
     list_display_links = []
 
+    date_hierarchy = 'created_time'
     list_filter = [CategoryOwnerFilter]
     search_fields = ['title', 'category__name']
 
@@ -77,39 +77,40 @@ class PostAdmin(admin.ModelAdmin):
     save_on_top = True
 
     exclude = ('owner',)
-    fields = (
-        ('category', 'title'),
-        'desc',
-        'status',
-        'content',
-        'tag',
-    )
-    # fieldsets = (
-    #     ('基础配置', {
-    #         'description': '基础配置描述',
-    #         'fields': (
-    #             ('title', 'category'),
-    #             'status',
-    #         ),
-    #     }),
-    #     ('内容', {
-    #         'fields': (
-    #             'desc',
-    #             'content',
-    #         )
-    #     }),
-    #     ('额外信息', {
-    #         'classes': ('collapse',),
-    #         'fields': ('tag',),
-    #     }),
+    # fields = (
+    #     ('category', 'title'),
+    #     'desc',
+    #     'status',
+    #     'content',
+    #     'tag',
     # )
+    fieldsets = (
+        ('基础配置', {
+            'description': '基础配置描述',
+            'fields': (
+                ('title', 'category'),
+                'status',
+            ),
+        }),
+        ('内容', {
+            'fields': (
+                'desc',
+                'content',
+            ),
 
+        }),
+        ('额外信息', {
+            'fields': ['tag'],
+            'classes': ['collapse'],
+        }),
+    )
+
+    @admin.display(description='操作')
     def operator(self, obj):
         return format_html(
             '<a href="{}">编辑</a>', reverse('cus_admin:blog_post_change', args=(obj.id,))
         )
-
-    operator.short_description = '操作'
+        # return f'<a href="{reverse("cus_admin:blog_post_change", args=(obj.id,))}">编辑</a>'
 
     def save_model(self, request, obj, form, change):
         obj.owner = request.user
@@ -124,6 +125,3 @@ class PostAdmin(admin.ModelAdmin):
             'all': ('https://cdn.bootcss.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css',),
         }
         js = ('https://cdn.bootcss.com/bootstrap/4.0.0-beta.2/js/bootstrap.bundle.js',)
-
-
-
