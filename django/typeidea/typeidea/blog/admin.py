@@ -69,7 +69,9 @@ class PostAdmin(admin.ModelAdmin):
 
     date_hierarchy = 'created_time'
     list_filter = [CategoryOwnerFilter]
+    # list_filter = ['owner',  'category', 'status']
     search_fields = ['title', 'category__name']
+    list_editable = ['status']
 
     actions_on_top = True
     actions_on_bottom = True
@@ -77,13 +79,6 @@ class PostAdmin(admin.ModelAdmin):
     save_on_top = True
 
     exclude = ('owner',)
-    # fields = (
-    #     ('category', 'title'),
-    #     'desc',
-    #     'status',
-    #     'content',
-    #     'tag',
-    # )
     fieldsets = (
         ('基础配置', {
             'description': '基础配置描述',
@@ -101,7 +96,6 @@ class PostAdmin(admin.ModelAdmin):
         }),
         ('额外信息', {
             'fields': ['tag'],
-            'classes': ['collapse'],
         }),
     )
 
