@@ -2,6 +2,7 @@ import mistune
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.functional import cached_property
+from django.urls import reverse
 
 
 class Category(models.Model):
@@ -131,3 +132,6 @@ class Post(models.Model):
     def latest_posts(cls):
         queryset = cls.objects.filter(status=cls.STATUS_NORMAL)
         return queryset
+
+    def get_absolute_url(self):
+        return reverse('blog:post-detail', args=(self.id,))

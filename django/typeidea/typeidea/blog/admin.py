@@ -35,6 +35,7 @@ class CategoryAdmin(admin.ModelAdmin):
     inlines = [PostInLine]
     list_display = ('name', 'status', 'is_nav', 'created_time', 'post_count')
     fields = ('name', 'status', 'is_nav', 'owner')
+    search_fields = ['name']
 
     def post_count(self, obj):
         return obj.post_set.count()
@@ -47,7 +48,7 @@ class CategoryAdmin(admin.ModelAdmin):
 
 
 class CategoryOwnerFilter(admin.SimpleListFilter):
-    title = '分类过滤器'
+    title = '分类'
     parameter_name = 'owner_category'
 
     def lookups(self, request, model_admin):
@@ -71,7 +72,9 @@ class PostAdmin(admin.ModelAdmin):
     list_filter = [CategoryOwnerFilter]
     # list_filter = ['owner',  'category', 'status']
     search_fields = ['title', 'category__name']
-    list_editable = ['status']
+    search_help_text = '帮助'
+    # list_editable = ['status']
+    autocomplete_fields = ['category']
 
     actions_on_top = True
     actions_on_bottom = True
