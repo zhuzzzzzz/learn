@@ -63,7 +63,7 @@ class CategoryOwnerFilter(admin.SimpleListFilter):
 
 @admin.register(Post, site=custom_site)
 class PostAdmin(admin.ModelAdmin):
-    form = PostAdminForm
+    # form = PostAdminForm
 
     list_display = ('title', 'owner', 'category', 'status', 'created_time', 'operator')
     list_display_links = []
